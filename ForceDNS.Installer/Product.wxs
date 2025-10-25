@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" >
+  <Product Id="{24F0FF75-35AD-4DE5-B67A-E87E327A5A3D}" Name="ForceDNS" Language="1033" Version="0.9.1.0" Manufacturer="Sarvesh Patil" UpgradeCode="BC81E809-32D7-4C08-8208-5CFE0EDAC4C6">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
+
+    <!-- TARGET DIRECTORY -->
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="ForceDNS" />
+      </Directory>
+
+      <!-- DESKTOP SHORTCUT -->
+
+      <Directory Id="DesktopFolder" Name="Desktop">
+        <Component Id="ApplicationShortcutDesktop" Guid="{3FA9EA6F-81CD-456C-9660-6C0239FF014E}">
+          <Shortcut Id="ApplicationDesktopShortcut"
+              Name="ForceDNS Settings"
+              Description="Forces the use of a specific DNS"
+              Target="[INSTALLDIR]ForceDNS.UI.exe"
+              WorkingDirectory="INSTALLDIR"/>
+          <RemoveFolder Id="DesktopFolder" On="uninstall"/>
+
+
+          <RegistryValue
+              Root="HKCU"
+              Key="SOFTWARE/ForceDNS"
+              Name="installed"
+              Type="integer"
+              Value="1"
+              KeyPath="yes"/> 
+        </Component>
+      </Directory>
+    </Directory>
+
+    <Icon Id="dns.ico" SourceFile="dns.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="dns.ico" />
+
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLDIR">
+
+      <Component Id="dns.ico" Guid="{AC22121E-3017-4ACE-86EF-73158EF0A20D}" >
+        <File Id="dns.ico" Name="dns.ico" Source="dns.ico" KeyPath="yes" />
+      </Component>
+      
+      <!-- Exes-->
+
+      <Component Id="ForceDNS.UI.exe" Guid="{E0F1E32F-C8C3-483F-ACED-166DADB41AA9}" >
+        <File Id="ForceDNS.UI.exe" Name="ForceDNS.UI.exe" Source="..\ForceDNS.UI\bin\Release\" KeyPath="yes" />
+      </Component>
+
+      <Component Id="ForceDNS.Service.exe" Guid="{F0051401-121C-493A-AB06-F6ECF5601CCF}" >
+        <File Id="ForceDNS.Service.exe" Name="ForceDNS.Service.exe" Source="..\ForceDNS.Service\bin\Release\" KeyPath="yes" />
+        <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="ForceDNS Service" DisplayName="ForceDNS Service" Vital="yes"
+              Description="ForceDNS Service" Start="auto" Account="LocalSystem" ErrorControl="normal"/>
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="ForceDNS Service" Wait="yes" />
+      </Component>
+
+      <!-- Key Dlls -->
+
+      <Component Id="ForceDNS.Common.dll" Guid="{04BEFE48-5802-4AFF-816E-FAF8F3ED15F5}" >
+        <File Id="ForceDNS.Common.dll" Name="ForceDNS.Common.dll" Source="..\ForceDNS.UI\bin\Release\" KeyPath="yes" />
+      </Component>
+
+      <Component Id="ForceDNS.BusinessLayer.dll" Guid="{570736AC-1023-4BC9-8C95-BFA49AA4457C}" >
+        <File Id="ForceDNS.BusinessLayer.dll" Name="ForceDNS.BusinessLayer.dll" Source="..\ForceDNS.UI\bin\Release\" KeyPath="yes" />
+      </Component>
+
+      <Component Id="ForceDNS.DataAccess.dll" Guid="{75F1A516-FEB0-4BB2-B8A8-014266C7CF52}" >
+        <File Id="ForceDNS.DataAccess.dll" Name="ForceDNS.DataAccess.dll" Source="..\ForceDNS.UI\bin\Release\" KeyPath="yes" />
+      </Component>
+
+      <Component Id="Serilog.dll" Guid="{545A8DC4-8B40-49F6-A7D8-966795634742}" >
+        <File Id="Serilog.dll" Name="Serilog.dll" Source="..\ForceDNS.Service\bin\Release\" KeyPath="yes" />
+      </Component>
+
+      <Component Id="Serilog.Sinks.File.dll" Guid="{6DB40A70-42DC-4BA8-91C3-08F6AA448EC7}" >
+        <File Id="Serilog.Sinks.File.dll" Name="Serilog.Sinks.File.dll" Source="..\ForceDNS.Service\bin\Release\" KeyPath="yes" />
+      </Component>
+
+      <!--Data-->
+
+      <Component Id="ForceDNS.Data.xml" Guid="{F871A98E-CDBE-4856-9158-7CCE129B0CEF}" >
+        <File Id="ForceDNS.Data.xml" Name="ForceDNS.Data.xml" Source="..\ForceDNS.Service\bin\Release\" KeyPath="yes" />
+      </Component>
+      
+      <!-- Ui Components -->
+
+      <Component Id="Xceed.Wpf.AvalonDock.dll" Guid="{0D6589BF-86E7-4633-9F4C-9D5F12FF9F68}" >
+        <File Id="Xceed.Wpf.AvalonDock.dll" Name="Xceed.Wpf.AvalonDock.dll" Source="..\ForceDNS.UI\bin\Release\" KeyPath="yes" />
+      </Component>
+      
+      <Component Id="Xceed.Wpf.AvalonDock.Themes.Aero.dll" Guid="{DD783280-8135-45BC-8D32-3C087A04EBFD}" >
+        <File Id="Xceed.Wpf.AvalonDock.Themes.Aero.dll" Name="Xceed.Wpf.AvalonDock.Themes.Aero.dll" Source="..\ForceDNS.UI\bin\Release\" KeyPath="yes" />
+      </Component>
+
+      <Component Id="Xceed.Wpf.AvalonDock.Themes.Metro.dll" Guid="{0412AA82-2737-45A3-8776-F9CFA90FA11D}" >
+        <File Id="Xceed.Wpf.AvalonDock.Themes.Metro.dll" Name="Xceed.Wpf.AvalonDock.Themes.Metro.dll" Source="..\ForceDNS.UI\bin\Release\" KeyPath="yes" />
+      </Component>
+
+      <Component Id="Xceed.Wpf.AvalonDock.Themes.VS2010.dll" Guid="{7C382CF0-7B63-4B0F-AD9A-B0F5A0520E6E}" >
+        <File Id="Xceed.Wpf.AvalonDock.Themes.VS2010.dll" Name="Xceed.Wpf.AvalonDock.Themes.VS2010.dll" Source="..\ForceDNS.UI\bin\Release\" KeyPath="yes" />
+      </Component>
+
+      <Component Id="Xceed.Wpf.Toolkit.dll" Guid="{F17CFF14-C2C9-48F4-A780-7A73B8DA259A}" >
+        <File Id="Xceed.Wpf.Toolkit.dll" Name="Xceed.Wpf.Toolkit.dll" Source="..\ForceDNS.UI\bin\Release\" KeyPath="yes" />
+      </Component>
+   
+
+      <!-- REGISTRY ENTRY FOR ForceDNS ADMIN PRIVILEGES -->
+
+      <Component Id="RegistryEntryForForceDNS" Guid="{441AAB9A-C7D7-4F11-8554-308DB83DE16B}" Win64="yes">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" >
+          <RegistryValue Id="ForceDNSLocation" Action="write" Type="string" Name="[INSTALLDIR]ForceDNS.Service.exe" Value="~ RUNASADMIN" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+
+    </ComponentGroup>
+
+
+    <!-- REFERENCE EVERY COMPONENT -->
+
+    <Feature Id="ProductFeature" Title="ForceDNS" Level="1">
+      <ComponentRef Id="ForceDNS.UI.exe" />
+      <ComponentRef Id="ForceDNS.Service.exe" />
+      <ComponentRef Id="ForceDNS.Common.dll" />
+      <ComponentRef Id="ForceDNS.BusinessLayer.dll" />
+      <ComponentRef Id="ForceDNS.DataAccess.dll" />
+      <ComponentRef Id="ForceDNS.Data.xml" />
+      <ComponentRef Id="Serilog.dll" />
+      <ComponentRef Id="Serilog.Sinks.File.dll" />
+
+      <ComponentRef Id="Xceed.Wpf.AvalonDock.dll" />
+      <ComponentRef Id="Xceed.Wpf.AvalonDock.Themes.Aero.dll" />
+      <ComponentRef Id="Xceed.Wpf.AvalonDock.Themes.Metro.dll" />
+      <ComponentRef Id="Xceed.Wpf.AvalonDock.Themes.VS2010.dll" />
+      <ComponentRef Id="Xceed.Wpf.Toolkit.dll" />
+
+      <ComponentRef Id="RegistryEntryForForceDNS" />
+      <ComponentRef Id="ApplicationShortcutDesktop" />
+      <ComponentRef Id="InstallDirCreateFolder" />
+
+    </Feature>
+
+    <DirectoryRef Id="INSTALLDIR">
+      <Component Id="InstallDirCreateFolder" Guid="{70816A97-C86F-42BE-BAA3-19612B40E0FC}">
+        <CreateFolder>
+          <util:PermissionEx User="Users" GenericAll="yes" />
+        </CreateFolder>
+      </Component>
+    </DirectoryRef>
+
+  </Product>
+</Wix>
